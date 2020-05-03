@@ -1,4 +1,4 @@
-function PlayerObject(color,playerId){
+function PlayerObject(color,socketId){
 	
 	this.speedX = 0;
 	this.speedY = 0;
@@ -7,14 +7,12 @@ function PlayerObject(color,playerId){
 	this.x = 20;
 	this.y = 150;    
 	this.color = color;
-	this.playerId = playerId;
+	this.socketId = socketId;
 	
 	
 	this.move = function(){
 		 this.x += this.speedX;
 		 this.y += this.speedY;
-		 /*canvasContext.fillStyle = this.color;
-	     canvasContext.fillRect(this.x,this.y,this.width,this.height);*/
 	}
 
 	this.right = function(){

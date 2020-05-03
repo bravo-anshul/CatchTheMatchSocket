@@ -49,17 +49,11 @@ function recievePlayer(){
 	socket.on('newClientConnect',
 		function(playerData){
 			//console.log(playerData.color,playerData.playerId);
-			playerObject = new PlayerObject(playerData.color,playerData.playerId);
+			playerObject = new PlayerObject(playerData.color,playerData.socketId);
 			displayObject();
 		}
 	);
 
-	socket.on('decreasePlayerId',
-		function(){
-			playerObject.playerId -=1;
-			console.log(playerObject.playerId);
-		}
-	);
 }
 
 document.onkeydown = function(e) {
@@ -88,7 +82,7 @@ function sendData(){
 		x : playerObject.x,
 		y : playerObject.y,
 		color : playerObject.color,
-		playerId : playerObject.playerId
+		socketId : playerObject.socketId
 	};
 	socket.emit('send', data);
 }
@@ -112,7 +106,7 @@ function checkBoundary(){
 
 function displayObject(){
 	canvasContext.clearRect(0,0,400,400);
-	console.log(playerObject.playerId);
+	//console.log(playerObject.socketId);
 	playerObject.move();
 	checkBoundary();
 	//displayText();

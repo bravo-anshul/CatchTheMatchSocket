@@ -9,10 +9,9 @@ var io = require('socket.io')(server);
 
 console.log("server running");
 
-var playerCount = 0;
+var playerCount=0;
 var playerArray = [];
 var colorArray = ["black","blue","red","green"];
-var socketArray = [];
 
 
 io.sockets.on('connection',
@@ -20,24 +19,24 @@ io.sockets.on('connection',
   function (socket) {
     console.log("We have a new client: " + socket.id);
 
-    socketArray[playerCount] = socket;
-    var newPlayer = new playersClass.player(colorArray[playerCount],playerCount,socket.id);
-    playerCount+=1;
+    var newPlayer = new playersClass.player(colorArray[playerCount],socket.id);
 
     socket.emit('newClientConnect',newPlayer);
 
     playerArray.push(newPlayer);
+    playerCount+=1;
     console.log(playerArray);
   
     socket.on('send',
       function(playerData) {
-        //console.log(playerData.playerId)
-        //if(playerArray[playerData.playerId]!=null){
-            playerArray[playerData.playerId].x = playerData.x;
-            playerArray[playerData.playerId].y = playerData.y;
-       // }
-        sendPlayer();
+        playerArray.forEach(function(item){
+            if(item.socketId == playerData.socketId){
+                item.x = playerData.x;
+                item.y = playerData.y;
+            }
 
+        });
+        sendPlayer();
       }
     );
 
@@ -55,32 +54,20 @@ io.sockets.on('connection',
   }
 );
 
-function removePlayer(disconnectedSocketId){
-  playerCount-=1;
-  console.log("inside remove player");
-  var index=0;
-  for(;index<playerArray.length;index++){
-    console.log("inside first for");
-      if(playerArray[index].socketId == disconnectedSocketId){
-          console.log("inside if");
-          playerArray.splice(index,1);
-          break;
-     }
-  }
-  console.log(index);
-  for(;index<playerArray.length;index++){
-      console.log("inside update loop");
-      playerArray[index].playerId -=1;
-      console.log(socketArray[index].id);
-      socketArray[index].emit("decreasePlayerId");
-
-  }
-
-  console.log("updated player array length :"+ playerArray.length);
-  console.log(playerArray);
-
-}
 
 function sendPlayer(){
   io.sockets.emit('recievePlayer', playerArray);
 }
+
+function removePlayer(disconnectedSocketId){
+  playerCount-=1;
+  for(var index=0;index<playerArray.length;index++){
+      if(playerArray[index].socketId == disconnectedSocketId){
+          playerArray.splice(index,1);
+          break;
+     }
+  }
+
+  console.log(playerArray);
+}
+

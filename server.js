@@ -5,8 +5,9 @@ var express = require('express');
 
 var app = express();
 app.use(express.static('public'));
+var port = process.env.PORT || 3000;
 
-var server = app.listen(3000);
+var server = app.listen(port);
 var io = require('socket.io')(server);
 
 console.log("server running");
@@ -47,8 +48,6 @@ io.sockets.on('connection',
             }
 
         });
-        /*sendPlayer();
-        sendObstacles();*/
       }
     );
 
@@ -71,15 +70,7 @@ function sendPlayerAndObstacleData(){
   io.sockets.emit('recieveData', {playerData : playerArray, obstacleData : obstacleArray})
 }
 
-/*function sendPlayer(){
-  io.sockets.emit('recievePlayer', playerArray,obstaclesArray);
-}
 
-function sendObstacles(){
-  updateObstacles();
-  io.sockets.emit('recieveObstacles', obstaclesArray);
-}
-*/
 function removePlayer(disconnectedSocketId){
   playerCount-=1;
   for(var index=0;index<playerArray.length;index++){

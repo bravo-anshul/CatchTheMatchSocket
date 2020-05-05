@@ -55,17 +55,6 @@ function activateEvents(){
 		}
 	);
 
-	/*socket.on('recieveObstacles',
-		function(obstaclesData){
-			obstaclesArray = obstaclesData;
-		}
-	);
-	socket.on('recievePlayer',
-		function(updatedPlayerData){
-			playerData = updatedPlayerData;
-			//console.log(playerData);
-		}
-	);*/
 
 }
 

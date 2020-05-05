@@ -1,4 +1,6 @@
 var playersClass = require('./PlayersClass.js');
+var obstacleClass = require('./ObstacleClass.js');
+
 var express = require('express');
 
 var app = express();
@@ -11,7 +13,10 @@ console.log("server running");
 
 var playerCount=0;
 var playerArray = [];
+var obstacleArray = [];
 var colorArray = ["black","blue","red","green"];
+
+var intervalBoolean = true;
 
 
 io.sockets.on('connection',
@@ -25,7 +30,13 @@ io.sockets.on('connection',
 
     playerArray.push(newPlayer);
     playerCount+=1;
+    obstacleFunction();
     console.log(playerArray);
+    if(intervalBoolean){
+        setInterval(sendPlayerAndObstacleData,10);
+        intervalBoolean = false;
+        console.log("interval Started");
+    }
   
     socket.on('send',
       function(playerData) {
@@ -36,13 +47,14 @@ io.sockets.on('connection',
             }
 
         });
-        sendPlayer();
+        /*sendPlayer();
+        sendObstacles();*/
       }
     );
 
     socket.on('socketConnected', 
       function(){
-        sendPlayer();
+        
       }
     );
     
@@ -54,11 +66,20 @@ io.sockets.on('connection',
   }
 );
 
-
-function sendPlayer(){
-  io.sockets.emit('recievePlayer', playerArray);
+function sendPlayerAndObstacleData(){
+  updateObstacles();
+  io.sockets.emit('recieveData', {playerData : playerArray, obstacleData : obstacleArray})
 }
 
+/*function sendPlayer(){
+  io.sockets.emit('recievePlayer', playerArray,obstaclesArray);
+}
+
+function sendObstacles(){
+  updateObstacles();
+  io.sockets.emit('recieveObstacles', obstaclesArray);
+}
+*/
 function removePlayer(disconnectedSocketId){
   playerCount-=1;
   for(var index=0;index<playerArray.length;index++){
@@ -71,3 +92,19 @@ function removePlayer(disconnectedSocketId){
   console.log(playerArray);
 }
 
+function updateObstacles(){
+  for(var i=0;i<obstacleArray.length;i++){
+      if(obstacleArray[i].x<-30)
+          obstacleArray.splice(i,1);
+      obstacleArray[i].x-=2;
+      
+      //check(obstacles[i]);      
+    }
+}
+
+function obstacleFunction(){
+  newobstacles = setInterval(function adding(){
+    var newObstacle = new obstacleClass.obstacle();
+    obstacleArray.push(newObstacle);
+  },300);
+} 

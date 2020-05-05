@@ -1,11 +1,9 @@
 var socket;
 
 var canvas = document.getElementById('canvas');
-var navigation = document.getElementById('navigation');
 var playerObject; // External PlayerObject File
 
 var canvasContext = canvas.getContext("2d");
-var navigationContext = navigation.getContext("2d");
 
 
 var windowHeight;
@@ -13,15 +11,15 @@ var obstacleHeight;
 var canvasHeight;
 var width;
 var playerData;
+var obstaclesArray = [];
 
 function initialize(){
 
 	width = window.innerWidth;
 	windowHeight = window.innerHeight;
-	canvas.style.height = windowHeight*70/100+"px";
-	navigation.style.height = windowHeight*20/100 +"px";
-	navigation.style.marginLeft = width/3+"px";
-	obstacleHeight = windowHeight*3/100;
+	//canvas.style.height = windowHeight*95/100+"px";
+	canvas.style.width = window.innerWidth;
+	obstacleHeight = windowHeight*1/100;
 	canvasHeight = parseInt(canvas.style.height,10);
 
 	document.getElementById('restart').style.left = width/2.5+"px";
@@ -33,26 +31,41 @@ function connectSocket(){
 	socket = io();
 	//socket = io.connect("http://192.168.1.11:3000");
 
-	recievePlayer();
+	activateEvents();
 }
 
 
-function recievePlayer(){
-
-	socket.on('recievePlayer',
-		function(updatedPlayerData){
-			playerData = updatedPlayerData;
-			//console.log(playerData);
-		}
-	);
+function activateEvents(){
 
 	socket.on('newClientConnect',
 		function(playerData){
 			//console.log(playerData.color,playerData.playerId);
 			playerObject = new PlayerObject(playerData.color,playerData.socketId);
 			displayObject();
+			setInterval(sendData,15);
 		}
 	);
+
+	socket.on('recieveData',
+		function(data){
+			console.log(data.playerData);
+			console.log(data.obstacleData);
+			playerData = data.playerData;
+			obstaclesArray = data.obstacleData;
+		}
+	);
+
+	/*socket.on('recieveObstacles',
+		function(obstaclesData){
+			obstaclesArray = obstaclesData;
+		}
+	);
+	socket.on('recievePlayer',
+		function(updatedPlayerData){
+			playerData = updatedPlayerData;
+			//console.log(playerData);
+		}
+	);*/
 
 }
 
@@ -78,6 +91,7 @@ document.onkeydown = function(e) {
    
 };
 function sendData(){
+	
 	var data = {
 		x : playerObject.x,
 		y : playerObject.y,
@@ -109,14 +123,21 @@ function displayObject(){
 	//console.log(playerObject.socketId);
 	playerObject.move();
 	checkBoundary();
+	displayObstacles();
 	//displayText();
-	sendData();
+	
 	if(playerData!=null){
 		playerData.forEach(function(item){
 			canvasContext.fillStyle = item.color;
 			canvasContext.fillRect(item.x,item.y,playerObject.width,playerObject.height);
 		});
 	}	
-
 	window.requestAnimationFrame(displayObject);
+}
+
+function displayObstacles(){
+	obstaclesArray.forEach(function(item){
+			canvasContext.fillStyle = item.color;
+			canvasContext.fillRect(item.x,item.y,item.width,item.height);
+	});
 }

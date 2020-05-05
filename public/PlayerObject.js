@@ -2,10 +2,10 @@ function PlayerObject(color,socketId){
 	
 	this.speedX = 0;
 	this.speedY = 0;
-	this.width = 30;
+	this.width = 10;
 	this.height = obstacleHeight;
 	this.x = 20;
-	this.y = 150;    
+	this.y = 50;    
 	this.color = color;
 	this.socketId = socketId;
 	

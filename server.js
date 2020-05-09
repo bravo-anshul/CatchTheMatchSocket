@@ -18,6 +18,8 @@ var obstacleArray = [];
 var colorArray = ["black","blue","red","green"];
 
 var intervalBoolean = true;
+var sendDataInterval;
+var addObstacleInterval;
 
 
 io.sockets.on('connection',
@@ -31,10 +33,13 @@ io.sockets.on('connection',
 
     playerArray.push(newPlayer);
     playerCount+=1;
-    obstacleFunction();
+    
     console.log(playerArray);
     if(intervalBoolean){
-        setInterval(sendPlayerAndObstacleData,10);
+
+        sendDataInterval = setInterval(sendPlayerAndObstacleData,5);
+        addObstacleInterval = setInterval(addObstacle,500);
+
         intervalBoolean = false;
         console.log("interval Started");
     }
@@ -48,12 +53,6 @@ io.sockets.on('connection',
             }
 
         });
-      }
-    );
-
-    socket.on('socketConnected', 
-      function(){
-        
       }
     );
     
@@ -80,7 +79,16 @@ function removePlayer(disconnectedSocketId){
      }
   }
 
+  checkAndClearIntervals();
+  
   console.log(playerArray);
+}
+
+function checkAndClearIntervals(){
+  if(playerArray.lenght == 0){
+    clearInterval(addObstacleInterval);
+    clearInterval(sendDataInterval);
+  }
 }
 
 function updateObstacles(){
@@ -93,9 +101,7 @@ function updateObstacles(){
     }
 }
 
-function obstacleFunction(){
-  newobstacles = setInterval(function adding(){
-    var newObstacle = new obstacleClass.obstacle();
-    obstacleArray.push(newObstacle);
-  },300);
+function addObstacle(){
+  var newObstacle = new obstacleClass.obstacle();
+  obstacleArray.push(newObstacle);
 } 

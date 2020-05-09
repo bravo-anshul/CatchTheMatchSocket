@@ -1,8 +1,8 @@
 module.exports = {
 	obstacle : function(){
-		this.x = 500;
-		this.width = 20;
-		this.height = 20;
+		this.x = 1500;
+		this.width = 60;
+		this.height = 60;
 
 		var colorArray = ["red","blue","black","yellow","#009688"];
 		var cRandom = Math.floor((Math.random()*5)+0);

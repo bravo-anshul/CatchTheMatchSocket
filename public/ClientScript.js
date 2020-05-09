@@ -3,29 +3,40 @@ var socket;
 var canvas = document.getElementById('canvas');
 var playerObject; // External PlayerObject File
 
-var canvasContext = canvas.getContext("2d");
+var canvasContext;
 
 
 var windowHeight;
-var obstacleHeight;
-var canvasHeight;
-var width;
+var windowWidth;
+
 var playerData;
 var obstaclesArray = [];
 
 function initialize(){
 
-	width = window.innerWidth;
+	windowWidth = window.innerWidth;
 	windowHeight = window.innerHeight;
-	//canvas.style.height = windowHeight*95/100+"px";
-	canvas.style.width = window.innerWidth;
-	obstacleHeight = windowHeight*1/100;
-	canvasHeight = parseInt(canvas.style.height,10);
 
-	document.getElementById('restart').style.left = width/2.5+"px";
+	canvasContext = setupCanvas(canvas);
+	
 	connectSocket();
 	
 }
+
+function setupCanvas(canvas) {
+
+  var dpr = window.devicePixelRatio || 1;
+
+  var rect = canvas.getBoundingClientRect();
+
+  canvas.width = (windowWidth-20) * dpr;
+  canvas.height = (windowHeight-40) * dpr;
+  var ctx = canvas.getContext('2d');
+
+  ctx.scale(dpr, dpr);
+  return ctx;
+}
+
 
 function connectSocket(){
 	socket = io();
@@ -42,14 +53,12 @@ function activateEvents(){
 			//console.log(playerData.color,playerData.playerId);
 			playerObject = new PlayerObject(playerData.color,playerData.socketId);
 			displayObject();
-			setInterval(sendData,15);
+			setInterval(sendData,5);
 		}
 	);
 
 	socket.on('recieveData',
 		function(data){
-			console.log(data.playerData);
-			console.log(data.obstacleData);
 			playerData = data.playerData;
 			obstaclesArray = data.obstacleData;
 		}
@@ -101,14 +110,21 @@ function checkBoundary(){
 	if(playerObject.y<0){
 		playerObject.y=0;
 	}
-	if(playerObject.y+obstacleHeight>=300){
-		playerObject.y = 300-obstacleHeight;
+	if(playerObject.y+60>=windowHeight){
+		playerObject.y = windowHeight-60;
 	}
+	if(playerObject.x<0){
+		playerObject.x=0;
+	}
+	if(playerObject.x+60>=windowWidth){
+		playerObject.x = windowWidth-60;
+	}
+
 }
 
 
 function displayObject(){
-	canvasContext.clearRect(0,0,400,400);
+	canvasContext.clearRect(0,0,windowWidth,windowHeight);
 	//console.log(playerObject.socketId);
 	playerObject.move();
 	checkBoundary();

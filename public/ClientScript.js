@@ -88,6 +88,25 @@ document.onkeydown = function(e) {
     }
    
 };
+
+document.onkeyup = function(e) {
+    switch (e.keyCode) {
+    	case 65:
+        case 37:
+        case 68:
+        case 39:
+            playerObject.clearHorizontal();
+            break;
+        case 87:
+        case 38:
+        case 83:
+        case 40:
+            playerObject.clearVertical();
+            break;
+    }
+   
+};
+
 function sendData(){
 	
 	var data = {
@@ -98,7 +117,7 @@ function sendData(){
 	};
 	socket.emit('send', data);
 }
-document.onkeyup = function(){playerObject.clear();};
+
 
 function displayText(){
 	canvasContext.fillStyle = "black";

@@ -31,8 +31,10 @@ function PlayerObject(color,socketId){
 		if(this.speedY < 4.5)
 	    	this.speedY+=4.5;
 	}
-	this.clear = function(){
+	this.clearVertical = function(){
 		this.speedY =0;
-	    this.speedX =0;
+	}
+	this.clearHorizontal = function(){
+		this.speedX =0;
 	}
 }

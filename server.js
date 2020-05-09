@@ -95,7 +95,7 @@ function updateObstacles(){
   for(var i=0;i<obstacleArray.length;i++){
       if(obstacleArray[i].x<-30)
           obstacleArray.splice(i,1);
-      obstacleArray[i].x-=2;
+      obstacleArray[i].x-=4;
       
       //check(obstacles[i]);      
     }

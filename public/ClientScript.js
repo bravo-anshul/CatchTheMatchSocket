@@ -26,7 +26,6 @@ function initialize(){
 function setupCanvas(canvas) {
 
   var dpr = window.devicePixelRatio || 1;
-
   var rect = canvas.getBoundingClientRect();
 
   canvas.width = (windowWidth-20) * dpr;
@@ -86,7 +85,7 @@ document.onkeydown = function(e) {
             playerObject.down();
             break;
     }
-   
+   	
 };
 
 document.onkeyup = function(e) {
@@ -152,6 +151,8 @@ function displayObject(){
 	
 	if(playerData!=null){
 		playerData.forEach(function(item){
+			if(item.socketId == playerObject.socketId)
+				return;
 			canvasContext.fillStyle = item.color;
 			canvasContext.fillRect(item.x,item.y,playerObject.width,playerObject.height);
 		});

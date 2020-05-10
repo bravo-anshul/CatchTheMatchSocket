@@ -11,8 +11,10 @@ function PlayerObject(color,socketId){
 	
 	
 	this.move = function(){
-		 this.x += this.speedX;
-		 this.y += this.speedY;
+		this.x += this.speedX;
+		this.y += this.speedY;
+		canvasContext.fillStyle = this.color;
+		canvasContext.fillRect(this.x,this.y,this.width,this.height);
 	}
 
 	this.right = function(){

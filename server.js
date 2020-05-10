@@ -80,12 +80,13 @@ function removePlayer(disconnectedSocketId){
   }
 
   checkAndClearIntervals();
-  
   console.log(playerArray);
 }
 
 function checkAndClearIntervals(){
-  if(playerArray.lenght == 0){
+  if(playerArray.length == 0){
+    intervalBoolean = true;
+    console.log("Intervals clear.")
     clearInterval(addObstacleInterval);
     clearInterval(sendDataInterval);
   }
@@ -93,12 +94,34 @@ function checkAndClearIntervals(){
 
 function updateObstacles(){
   for(var i=0;i<obstacleArray.length;i++){
-      if(obstacleArray[i].x<-30)
+      checkCollision(obstacleArray[i]);
+      if(!(obstacleArray[i].collisionState )|| obstacleArray[i].x < 50){
           obstacleArray.splice(i,1);
-      obstacleArray[i].x-=4;
-      
-      //check(obstacles[i]);      
+      }
+      obstacleArray[i].x-=4;      
     }
+}
+
+function checkCollision(obstacle){
+
+  playerArray.forEach(function(player){
+      if(obstacle.collisionState && obstacle.x <= player.x){
+        var obstacleLeft = obstacle.x;
+        var obstacleRight = obstacle.x+obstacle.width;
+        var obstacleTop = obstacle.y;
+        var obstacleBottom = obstacle.y+obstacle.height;
+        var playerLeft = player.x;
+        var playerRight = player.x+player.width;
+        var playerTop = player.y;
+        var playerBottom = player.y+player.height;
+
+        if(playerRight > obstacleLeft && obstacleRight > playerLeft && ((playerTop <= obstacleBottom && playerTop >= obstacleTop)||(playerBottom >= obstacleTop && playerBottom <= obstacleBottom))){
+          obstacle.collisionState = false;
+        }
+      }
+
+  });
+  
 }
 
 function addObstacle(){

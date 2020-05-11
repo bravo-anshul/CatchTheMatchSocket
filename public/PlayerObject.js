@@ -10,7 +10,6 @@ function PlayerObject(color,socketId){
 	this.socketId = socketId;
 	this.score = 0;
 	
-	
 	this.move = function(){
 		this.x += this.speedX;
 		this.y += this.speedY;

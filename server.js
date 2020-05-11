@@ -72,7 +72,7 @@ function sendPlayerAndObstacleData(){
 
 
 function removePlayer(disconnectedSocketId){
-  playerCount-=1;
+  
   for(var index=0;index<playerArray.length;index++){
       if(playerArray[index].socketId == disconnectedSocketId){
           playerArray.splice(index,1);
@@ -85,6 +85,7 @@ function removePlayer(disconnectedSocketId){
 }
 
 function checkAndClearIntervals(){
+  playerCount-=1;
   if(playerArray.length == 0){
     intervalBoolean = true;
     console.log("Intervals clear.")
@@ -135,6 +136,7 @@ function checkCollision(obstacle){
 
 function disablePlayer(player){
   player.state = false;
+  checkAndClearIntervals();
   io.sockets.emit('disableInterval', player.socketId);
 }
 

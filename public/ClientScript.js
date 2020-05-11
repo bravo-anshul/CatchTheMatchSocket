@@ -68,7 +68,6 @@ function activateEvents(){
 
 	socket.on('disableInterval', function(socketId){
 		if(socketId == playerObject.socketId){
-			console.log("inside clear interval");
 			clearInterval(sendDataInterval);
 			gameOver = true;
 		}
@@ -148,30 +147,31 @@ function checkBoundary(){
 
 function displayObject(){
 	canvasContext.clearRect(0,0,windowWidth,windowHeight);
-	//console.log(playerObject.socketId);
-	playerObject.move();
-	checkBoundary();
+	//console.log(playerObject.state);
+	if(!gameOver){
+		playerObject.move();
+		checkBoundary();
+	}
 	displayObstacles();
 	displayGameOver();
 	
 	if(playerData!=null){
-		playerData.forEach(function(item){
-			displayText(item.score);
-			if(item.socketId == playerObject.socketId || !(item.state))
+		playerData.forEach(function(player, index){
+			displayText(player.score,index+1);
+			if(player.socketId == playerObject.socketId || !(player.state))
 				return;
-			canvasContext.fillStyle = item.color;
-			canvasContext.fillRect(item.x,item.y,playerObject.width,playerObject.height);
+			canvasContext.fillStyle = player.color;
+			canvasContext.fillRect(player.x,player.y,player.width,player.height);
 		});
 	}	
 	window.requestAnimationFrame(displayObject);
 }
 
 
-function displayText(score){
+function displayText(score,index){
 	canvasContext.fillStyle = "black";
 	canvasContext.font = windowWidth/40+"px Courier New";
-	//canvasContext.fillText(1,10,50);
-	canvasContext.fillText("Score:"+score,(windowWidth - 250),50);
+	canvasContext.fillText("Score:"+score,200 + (index * 200),50);
 }
 
 
@@ -186,7 +186,6 @@ function displayGameOver(){
 	if(gameOver){
 		canvasContext.fillStyle = "Red";
 		canvasContext.font = windowWidth/20+"px Courier New";
-		//canvasContext.fillText(1,10,50);
 		canvasContext.fillText("GAME OVER :(", (windowWidth/3), windowHeight/2);
 	}
 }

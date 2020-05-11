@@ -9,7 +9,7 @@ module.exports = {
 		var cRandom = Math.floor((Math.random()*5)+0);
 		this.color = colorArray[cRandom];
 		
-		var yRandom = Math.floor((Math.random()*1000)+1);
+		var yRandom = Math.floor((Math.random()*700)+1);
 		this.y = yRandom;
 	}
 };

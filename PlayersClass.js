@@ -6,5 +6,7 @@ module.exports = {
 		this.height = 30;
 		this.color = color;
 		this.socketId = socketId;
+		this.score = 0;
+		this.state = true;
 	}
 };

@@ -4,13 +4,14 @@ var canvas = document.getElementById('canvas');
 var playerObject; // External PlayerObject File
 
 var canvasContext;
-
-
 var windowHeight;
 var windowWidth;
 
 var playerData;
 var obstaclesArray = [];
+
+var sendDataInterval;
+var gameOver = false;
 
 function initialize(){
 
@@ -22,6 +23,14 @@ function initialize(){
 	connectSocket();
 	
 }
+
+function connectSocket(){
+	socket = io();
+	//socket = io.connect("http://192.168.1.11:3000");
+
+	activateEvents();
+}
+
 
 function setupCanvas(canvas) {
 
@@ -37,12 +46,6 @@ function setupCanvas(canvas) {
 }
 
 
-function connectSocket(){
-	socket = io();
-	//socket = io.connect("http://192.168.1.11:3000");
-
-	activateEvents();
-}
 
 
 function activateEvents(){
@@ -52,7 +55,7 @@ function activateEvents(){
 			//console.log(playerData.color,playerData.playerId);
 			playerObject = new PlayerObject(playerData.color,playerData.socketId);
 			displayObject();
-			setInterval(sendData,5);
+			sendDataInterval = setInterval(sendData,5);
 		}
 	);
 
@@ -63,8 +66,29 @@ function activateEvents(){
 		}
 	);
 
+	socket.on('disableInterval', function(socketId){
+		if(socketId == playerObject.socketId){
+			console.log("inside clear interval");
+			clearInterval(sendDataInterval);
+			gameOver = true;
+		}
+
+	});
+
 
 }
+
+function sendData(){
+	
+	var data = {
+		x : playerObject.x,
+		y : playerObject.y,
+		color : playerObject.color,
+		socketId : playerObject.socketId
+	};
+	socket.emit('send', data);
+}
+
 
 document.onkeydown = function(e) {
     switch (e.keyCode) {
@@ -106,24 +130,6 @@ document.onkeyup = function(e) {
    
 };
 
-function sendData(){
-	
-	var data = {
-		x : playerObject.x,
-		y : playerObject.y,
-		color : playerObject.color,
-		socketId : playerObject.socketId
-	};
-	socket.emit('send', data);
-}
-
-
-function displayText(){
-	canvasContext.fillStyle = "black";
-	canvasContext.font = width/20+"px Courier New";
-	canvasContext.fillText(1,10,50);
-	canvasContext.fillText("Time:"+10,200,50);
-}
 function checkBoundary(){
 	if(playerObject.y<0){
 		playerObject.y=0;
@@ -140,18 +146,18 @@ function checkBoundary(){
 
 }
 
-
 function displayObject(){
 	canvasContext.clearRect(0,0,windowWidth,windowHeight);
 	//console.log(playerObject.socketId);
 	playerObject.move();
 	checkBoundary();
 	displayObstacles();
-	//displayText();
+	displayGameOver();
 	
 	if(playerData!=null){
 		playerData.forEach(function(item){
-			if(item.socketId == playerObject.socketId)
+			displayText(item.score);
+			if(item.socketId == playerObject.socketId || !(item.state))
 				return;
 			canvasContext.fillStyle = item.color;
 			canvasContext.fillRect(item.x,item.y,playerObject.width,playerObject.height);
@@ -160,9 +166,28 @@ function displayObject(){
 	window.requestAnimationFrame(displayObject);
 }
 
+
+function displayText(score){
+	canvasContext.fillStyle = "black";
+	canvasContext.font = windowWidth/40+"px Courier New";
+	//canvasContext.fillText(1,10,50);
+	canvasContext.fillText("Score:"+score,(windowWidth - 250),50);
+}
+
+
 function displayObstacles(){
 	obstaclesArray.forEach(function(item){
 			canvasContext.fillStyle = item.color;
 			canvasContext.fillRect(item.x,item.y,item.width,item.height);
 	});
 }
+
+function displayGameOver(){
+	if(gameOver){
+		canvasContext.fillStyle = "Red";
+		canvasContext.font = windowWidth/20+"px Courier New";
+		//canvasContext.fillText(1,10,50);
+		canvasContext.fillText("GAME OVER :(", (windowWidth/3), windowHeight/2);
+	}
+}
+

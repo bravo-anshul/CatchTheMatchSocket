@@ -64,6 +64,7 @@ io.sockets.on('connection',
   }
 );
 
+
 function sendPlayerAndObstacleData(){
   updateObstacles();
   io.sockets.emit('recieveData', {playerData : playerArray, obstacleData : obstacleArray})
@@ -98,14 +99,15 @@ function updateObstacles(){
       if(!(obstacleArray[i].collisionState )|| obstacleArray[i].x < 50){
           obstacleArray.splice(i,1);
       }
-      obstacleArray[i].x-=4;      
+      if(obstacleArray[i] != null)
+        obstacleArray[i].x-=4;      
     }
 }
 
 function checkCollision(obstacle){
 
   playerArray.forEach(function(player){
-      if(obstacle.collisionState && obstacle.x <= player.x){
+      if(obstacle.collisionState && obstacle.x <= player.x && player.state){
         var obstacleLeft = obstacle.x;
         var obstacleRight = obstacle.x+obstacle.width;
         var obstacleTop = obstacle.y;
@@ -116,13 +118,26 @@ function checkCollision(obstacle){
         var playerBottom = player.y+player.height;
 
         if(playerRight > obstacleLeft && obstacleRight > playerLeft && ((playerTop <= obstacleBottom && playerTop >= obstacleTop)||(playerBottom >= obstacleTop && playerBottom <= obstacleBottom))){
+          
           obstacle.collisionState = false;
+          if(obstacle.color == player.color){
+            player.score+=1;
+          }
+          else{
+            disablePlayer(player);
+          }
         }
       }
 
   });
   
 }
+
+function disablePlayer(player){
+  player.state = false;
+  io.sockets.emit('disableInterval', player.socketId);
+}
+
 
 function addObstacle(){
   var newObstacle = new obstacleClass.obstacle();

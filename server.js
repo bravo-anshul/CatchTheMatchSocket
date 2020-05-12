@@ -27,7 +27,7 @@ io.sockets.on('connection',
   function (socket) {
     console.log("We have a new client: " + socket.id);
 
-    var newPlayer = new playersClass.player(colorArray[playerCount],socket.id);
+    var newPlayer = new playersClass.player(getColor(),socket.id);
 
     socket.emit('newClientConnect',newPlayer);
 
@@ -63,6 +63,14 @@ io.sockets.on('connection',
 
   }
 );
+
+function getColor(){
+  var colorArray = ["red","blue","black","yellow","#009688"];
+  var cRandom = Math.floor((Math.random()*5)+0);
+  var color = colorArray[cRandom];
+
+  return color;
+}
 
 
 function sendPlayerAndObstacleData(){
@@ -123,6 +131,7 @@ function checkCollision(obstacle){
           obstacle.collisionState = false;
           if(obstacle.color == player.color){
             player.score+=1;
+            player.color = getColor();
           }
           else{
             disablePlayer(player);

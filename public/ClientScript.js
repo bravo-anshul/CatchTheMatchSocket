@@ -158,8 +158,10 @@ function displayObject(){
 	if(playerData!=null){
 		playerData.forEach(function(player, index){
 			displayText(player.score,index+1);
-			if(player.socketId == playerObject.socketId || !(player.state))
+			if(player.socketId == playerObject.socketId || !(player.state)){
+				playerObject.color = player.color;
 				return;
+			}
 			canvasContext.fillStyle = player.color;
 			canvasContext.fillRect(player.x,player.y,player.width,player.height);
 		});

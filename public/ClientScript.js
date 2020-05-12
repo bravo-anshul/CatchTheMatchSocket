@@ -55,7 +55,7 @@ function activateEvents(){
 			//console.log(playerData.color,playerData.playerId);
 			playerObject = new PlayerObject(playerData.color,playerData.socketId);
 			displayObject();
-			sendDataInterval = setInterval(sendData,5);
+			sendDataInterval = setInterval(sendData,30);
 		}
 	);
 
@@ -70,6 +70,7 @@ function activateEvents(){
 		if(socketId == playerObject.socketId){
 			clearInterval(sendDataInterval);
 			gameOver = true;
+			document.getElementById("restart").style.display = "block";
 		}
 
 	});
@@ -86,6 +87,14 @@ function sendData(){
 		socketId : playerObject.socketId
 	};
 	socket.emit('send', data);
+}
+
+function restart(){
+	sendDataInterval = setInterval(sendData,30);
+	gameOver = false;
+	playerObject.x = 0;
+	playerObject.y = 0;
+	socket.emit('restartGame', playerObject.socketId);
 }
 
 
@@ -154,7 +163,12 @@ function displayObject(){
 	}
 	displayObstacles();
 	displayGameOver();
+	displayPlayers();
 	
+	window.requestAnimationFrame(displayObject);
+}
+
+function displayPlayers(){
 	if(playerData!=null){
 		playerData.forEach(function(player, index){
 			displayText(player.score,index+1);
@@ -166,11 +180,14 @@ function displayObject(){
 			canvasContext.fillRect(player.x,player.y,player.width,player.height);
 		});
 	}	
-	window.requestAnimationFrame(displayObject);
 }
 
 
 function displayText(score,index){
+	canvasContext.fillStyle = "black";
+	canvasContext.moveTo(60, 0);
+	canvasContext.lineTo(60, windowHeight);
+	canvasContext.stroke();
 	canvasContext.fillStyle = "black";
 	canvasContext.font = windowWidth/40+"px Courier New";
 	canvasContext.fillText("Score:"+score,200 + (index * 200),50);

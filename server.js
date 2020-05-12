@@ -38,7 +38,7 @@ io.sockets.on('connection',
     if(intervalBoolean){
 
         sendDataInterval = setInterval(sendPlayerAndObstacleData,5);
-        addObstacleInterval = setInterval(addObstacle,500);
+        addObstacleInterval = setInterval(addObstacle,200);
 
         intervalBoolean = false;
         console.log("interval Started");
@@ -55,6 +55,18 @@ io.sockets.on('connection',
         });
       }
     );
+
+    socket.on('restartGame', function(socketId){
+        playerArray.forEach(function(player){
+            if(player.socketId == socketId){
+              player.state = true;
+              player.score = 0;
+              player.x = 0;
+              player.y = 0;
+            }
+        });
+
+    });
     
     socket.on('disconnect', function() {
       console.log("Client Disconnected :" + socket.id);
@@ -63,6 +75,12 @@ io.sockets.on('connection',
 
   }
 );
+
+
+function sendPlayerAndObstacleData(){
+  updateObstacles();
+  io.sockets.emit('recieveData', {playerData : playerArray, obstacleData : obstacleArray})
+}
 
 function getColor(){
   var colorArray = ["red","blue","black","yellow","#009688"];
@@ -73,10 +91,6 @@ function getColor(){
 }
 
 
-function sendPlayerAndObstacleData(){
-  updateObstacles();
-  io.sockets.emit('recieveData', {playerData : playerArray, obstacleData : obstacleArray})
-}
 
 
 function removePlayer(disconnectedSocketId){
@@ -105,7 +119,7 @@ function checkAndClearIntervals(){
 function updateObstacles(){
   for(var i=0;i<obstacleArray.length;i++){
       checkCollision(obstacleArray[i]);
-      if(!(obstacleArray[i].collisionState )|| obstacleArray[i].x < 50){
+      if(!(obstacleArray[i].collisionState )|| obstacleArray[i].x < 48){
           obstacleArray.splice(i,1);
       }
       if(obstacleArray[i] != null)

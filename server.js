@@ -27,32 +27,39 @@ io.sockets.on('connection',
   function (socket) {
     console.log("We have a new client: " + socket.id);
 
-    socket.on('addPlayer', function(playerName){
-         var newPlayer = new playersClass.player(getColor(),socket.id,playerName);
+    var newPlayer = new playersClass.player(getColor(),socket.id);
 
-        socket.emit('newClientConnect',newPlayer);
+    socket.emit('newClientConnect',newPlayer);
 
-        playerArray.push(newPlayer);
-        playerCount+=1;
-        
-        console.log(playerArray);
-        if(intervalBoolean){
+    playerArray.push(newPlayer);
+    playerCount+=1;
+    
+    console.log(playerArray);
+    if(intervalBoolean){
 
-            sendDataInterval = setInterval(sendPlayerAndObstacleData,5);
-            addObstacleInterval = setInterval(addObstacle,200);
+        sendDataInterval = setInterval(sendPlayerAndObstacleData,5);
+        addObstacleInterval = setInterval(addObstacle,200);
 
-            intervalBoolean = false;
-            console.log("interval Started");
-        }
+        intervalBoolean = false;
+        console.log("interval Started");
+    }
 
+    socket.on('addPlayerName', function(socketId, playerName){
+        playerArray.forEach(function(player){
+            if(player.socketId == socketId){
+                console.log("name changed");
+                player.name = playerName;
+            }
+
+        });
     });
-
+  
     socket.on('send',
       function(playerData) {
-        playerArray.forEach(function(item){
-            if(item.socketId == playerData.socketId){
-                item.x = playerData.x;
-                item.y = playerData.y;
+        playerArray.forEach(function(player){
+            if(player.socketId == playerData.socketId){
+                player.x = playerData.x;
+                player.y = playerData.y;
             }
 
         });
@@ -92,8 +99,6 @@ function getColor(){
 
   return color;
 }
-
-
 
 
 function removePlayer(disconnectedSocketId){

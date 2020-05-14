@@ -17,7 +17,7 @@
     background-color: #f1f1f1;
 }
 
-#welcomeDialog{
+.divBox{
 	position: absolute;
 	left:25%;
 	top:20%;
@@ -53,17 +53,25 @@ hr{
 	color:white;
 	background:#009688;
 }
+#restartDialog{
+	display: none;
+}
 </style>
 </head>
 <body onload="initialize()">
-	<div id="welcomeDialog">
+	<div id="welcomeDialog" class="divBox">
 		<h1> Catch-THE-Match</h1>
 		<hr></hr>
 		<input id="nameInput" minlength="4" maxlength="8" placeholder="Please enter your name."></input>
 		<button type="submit" id="playButton" onclick="addPlayer()"> Start </button>
 	</div>
+	<div id="restartDialog" class="divBox">
+		<h1> Catch-THE-Match</h1>
+		<hr></hr>
+		<button type="submit" id="playButton" onclick="restart()"> RESTART GAME </button>
+	</div>
 	<canvas id="canvas"> This inserts a canvas is documnet.</canvas>
-	<button id="restart" onclick="restart()">RESTART</button>
+
 <script type="text/javascript" src="PlayerObject.js"></script>
 <script type="text/javascript" src="ClientScript.js"></script>
 </body>

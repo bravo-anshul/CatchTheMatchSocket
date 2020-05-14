@@ -21,6 +21,7 @@ function initialize(){
 	canvasContext = setupCanvas(canvas);
 	
 	connectSocket();
+	
 }
 
 function connectSocket(){
@@ -29,7 +30,6 @@ function connectSocket(){
 
 	activateEvents();
 }
-
 
 function setupCanvas(canvas) {
 
@@ -46,17 +46,25 @@ function setupCanvas(canvas) {
 
 function addPlayer(){
 	var playerName = document.getElementById("nameInput").value;
-	socket.emit('addPlayer', playerName);
+	if(playerName.length < 2){
+		alert("Please enter more than 2 characters");
+		return;
+	}
+	playerObject.state = true;
+	document.getElementById("welcomeDialog").style.display = 'none';
+	socket.emit('addPlayerName', playerObject.socketId, playerName);
 }
+
 
 
 function activateEvents(){
 
 	socket.on('newClientConnect',
 		function(playerData){
+			//console.log(playerData.color,playerData.playerId);
 			playerObject = new PlayerObject(playerData.color,playerData.socketId);
 			displayObject();
-			sendDataInterval = setInterval(sendData,30);
+			sendDataInterval = setInterval(sendData,15);
 		}
 	);
 
@@ -71,7 +79,7 @@ function activateEvents(){
 		if(socketId == playerObject.socketId){
 			clearInterval(sendDataInterval);
 			gameOver = true;
-			document.getElementById("restart").style.display = "block";
+			document.getElementById("restartDialog").style.display = 'block';
 		}
 
 	});
@@ -91,6 +99,7 @@ function sendData(){
 }
 
 function restart(){
+	document.getElementById("restartDialog").style.display = 'none';
 	sendDataInterval = setInterval(sendData,30);
 	gameOver = false;
 	playerObject.x = 0;
@@ -158,12 +167,11 @@ function checkBoundary(){
 function displayObject(){
 	canvasContext.clearRect(0,0,windowWidth,windowHeight);
 	//console.log(playerObject.state);
-	if(!gameOver && playerObject != null){
+	if(!gameOver && playerObject.state){
 		playerObject.move();
 		checkBoundary();
 	}
 	displayObstacles();
-	displayGameOver();
 	displayPlayers();
 	
 	window.requestAnimationFrame(displayObject);
@@ -172,7 +180,7 @@ function displayObject(){
 function displayPlayers(){
 	if(playerData!=null){
 		playerData.forEach(function(player, index){
-			displayText(player.name,player.score,index+1);
+			displayText(player.score,index+1,player.name);
 			if(player.socketId == playerObject.socketId || !(player.state)){
 				playerObject.color = player.color;
 				return;
@@ -184,14 +192,16 @@ function displayPlayers(){
 }
 
 
-function displayText(playerName,score,index){
+function displayText(score,index,playerName){
 	canvasContext.fillStyle = "black";
 	canvasContext.moveTo(60, 0);
 	canvasContext.lineTo(60, windowHeight);
 	canvasContext.stroke();
+	if(playerName == null)
+		return;
 	canvasContext.fillStyle = "black";
 	canvasContext.font = windowWidth/40+"px Courier New";
-	canvasContext.fillText(playerName+" :"+score,200 + (index * 200),50);
+	canvasContext.fillText(playerName+":"+score,200 + (index * 200),50);
 }
 
 
@@ -202,11 +212,4 @@ function displayObstacles(){
 	});
 }
 
-function displayGameOver(){
-	if(gameOver){
-		canvasContext.fillStyle = "Red";
-		canvasContext.font = windowWidth/20+"px Courier New";
-		canvasContext.fillText("GAME OVER :(", (windowWidth/3), windowHeight/2);
-	}
-}
 

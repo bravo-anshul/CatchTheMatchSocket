@@ -1,5 +1,5 @@
 module.exports = {
-	player : function(color,socketId, playerName){
+	player : function(color,socketId){
 		this.x = 0;
 		this.y = 0;
 		this.width = 30;
@@ -8,6 +8,6 @@ module.exports = {
 		this.socketId = socketId;
 		this.score = 0;
 		this.state = true;
-		this.name = playerName;
+		this.name;
 	}
 };

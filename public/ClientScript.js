@@ -21,7 +21,6 @@ function initialize(){
 	canvasContext = setupCanvas(canvas);
 	
 	connectSocket();
-	
 }
 
 function connectSocket(){
@@ -45,14 +44,16 @@ function setupCanvas(canvas) {
   return ctx;
 }
 
-
+function addPlayer(){
+	var playerName = document.getElementById("nameInput").value;
+	socket.emit('addPlayer', playerName);
+}
 
 
 function activateEvents(){
 
 	socket.on('newClientConnect',
 		function(playerData){
-			//console.log(playerData.color,playerData.playerId);
 			playerObject = new PlayerObject(playerData.color,playerData.socketId);
 			displayObject();
 			sendDataInterval = setInterval(sendData,30);
@@ -157,7 +158,7 @@ function checkBoundary(){
 function displayObject(){
 	canvasContext.clearRect(0,0,windowWidth,windowHeight);
 	//console.log(playerObject.state);
-	if(!gameOver){
+	if(!gameOver && playerObject != null){
 		playerObject.move();
 		checkBoundary();
 	}
@@ -171,7 +172,7 @@ function displayObject(){
 function displayPlayers(){
 	if(playerData!=null){
 		playerData.forEach(function(player, index){
-			displayText(player.score,index+1);
+			displayText(player.name,player.score,index+1);
 			if(player.socketId == playerObject.socketId || !(player.state)){
 				playerObject.color = player.color;
 				return;
@@ -183,14 +184,14 @@ function displayPlayers(){
 }
 
 
-function displayText(score,index){
+function displayText(playerName,score,index){
 	canvasContext.fillStyle = "black";
 	canvasContext.moveTo(60, 0);
 	canvasContext.lineTo(60, windowHeight);
 	canvasContext.stroke();
 	canvasContext.fillStyle = "black";
 	canvasContext.font = windowWidth/40+"px Courier New";
-	canvasContext.fillText("Score:"+score,200 + (index * 200),50);
+	canvasContext.fillText(playerName+" :"+score,200 + (index * 200),50);
 }
 
 

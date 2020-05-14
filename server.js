@@ -27,23 +27,26 @@ io.sockets.on('connection',
   function (socket) {
     console.log("We have a new client: " + socket.id);
 
-    var newPlayer = new playersClass.player(getColor(),socket.id);
+    socket.on('addPlayer', function(playerName){
+         var newPlayer = new playersClass.player(getColor(),socket.id,playerName);
 
-    socket.emit('newClientConnect',newPlayer);
+        socket.emit('newClientConnect',newPlayer);
 
-    playerArray.push(newPlayer);
-    playerCount+=1;
-    
-    console.log(playerArray);
-    if(intervalBoolean){
+        playerArray.push(newPlayer);
+        playerCount+=1;
+        
+        console.log(playerArray);
+        if(intervalBoolean){
 
-        sendDataInterval = setInterval(sendPlayerAndObstacleData,5);
-        addObstacleInterval = setInterval(addObstacle,200);
+            sendDataInterval = setInterval(sendPlayerAndObstacleData,5);
+            addObstacleInterval = setInterval(addObstacle,200);
 
-        intervalBoolean = false;
-        console.log("interval Started");
-    }
-  
+            intervalBoolean = false;
+            console.log("interval Started");
+        }
+
+    });
+
     socket.on('send',
       function(playerData) {
         playerArray.forEach(function(item){

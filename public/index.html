@@ -10,22 +10,60 @@
     border:1px solid #d3d3d3;
     background-color: #f1f1f1;
 }
-
-button{
-	position: absolute;
-	display: none;
-}
 #navigation{
 	width: 80;
 	margin-top: 30px;
 	border:1px solid #d3d3d3;
     background-color: #f1f1f1;
 }
+
+#welcomeDialog{
+	position: absolute;
+	left:25%;
+	top:20%;
+	z-index:5;
+	width: 50%;
+	border : 2px dotted black;
+	border-radius: 30px 30px 0px 0px;
+	text-align:center;
+
+}
+h1{
+	font-size: 50px;
+
+}
+hr{
+	border : 1px dashed black;
+}
+#nameInput{
+	margin : 20px;
+	border : 2px solid black;
+	border-radius: 10px;
+	padding:5px;
+	font-size: 15px;
+	background:transparent;
+}
+
+#playButton{
+	margin : 20px;
+	border : 2px dashed #009688;
+	border-radius: 10px;
+	padding:5px 15px;
+	font-size: 15px;
+	color:white;
+	background:#009688;
+}
 </style>
 </head>
 <body onload="initialize()">
-<canvas id="canvas"> This inserts a canvas is documnet.</canvas>
-<button id="restart" onclick="restart()">RESTART</button>
+	<div id="welcomeDialog">
+		<h1> Catch-THE-Match</h1>
+		<hr></hr>
+		<input id="nameInput" minlength="4" maxlength="8" placeholder="Please enter your name."></input>
+		<button type="submit" id="playButton" onclick="addPlayer()"> Start </button>
+	</div>
+	<canvas id="canvas"> This inserts a canvas is documnet.</canvas>
+	<button id="restart" onclick="restart()">RESTART</button>
 <script type="text/javascript" src="PlayerObject.js"></script>
 <script type="text/javascript" src="ClientScript.js"></script>
 </body>
